@@ -1,0 +1,52 @@
+RewriteEngine On
+
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+</IfModule>
+
+
+#Xử lý Route CTV
+RewriteRule ^ctv/orders-vps-edit/([A-Za-z0-9-]+) index.php?module=ctv&action=orders-vps-edit&id=$1 [L]
+RewriteRule ^ctv/vps-edit/([A-Za-z0-9-]+) index.php?module=ctv&action=vps-edit&id=$1 [L]
+RewriteRule ^ctv/([A-Za-z0-9-]+) index.php?module=ctv&action=$1 [L]
+RewriteRule ^ctv index.php?module=ctv&action= [L]
+#Xử lý Route ADMIN
+RewriteRule ^admin/source-edit/([A-Za-z0-9-]+) index.php?module=admin&action=source-edit&id=$1 [L]
+
+RewriteRule ^admin/question-edit/([A-Za-z0-9-]+) index.php?module=admin&action=question-edit&id=$1 [L]
+RewriteRule ^admin/orders-vps-edit/([A-Za-z0-9-]+) index.php?module=admin&action=orders-vps-edit&id=$1 [L]
+RewriteRule ^admin/vps-edit/([A-Za-z0-9-]+) index.php?module=admin&action=edit-vps&id=$1 [L]
+RewriteRule ^admin/edit-category/([A-Za-z0-9-]+) index.php?module=admin&action=edit-category&id=$1 [L]
+RewriteRule ^admin/user-edit/([A-Za-z0-9-]+) index.php?module=admin&action=user-edit&id=$1 [L]
+RewriteRule ^admin/([A-Za-z0-9-]+) index.php?module=admin&action=$1 [L]
+RewriteRule ^admin index.php?module=admin&action= [L]
+#Xử lý Route CLIENT
+RewriteRule ^client/home/([A-Za-z0-9-]+) index.php?module=client&action=home&shop=$1 [L]
+RewriteRule ^client/blog/([A-Za-z0-9-]+) index.php?module=client&action=blog&id=$1 [L]
+RewriteRule ^client/giftbox/([A-Za-z0-9-]+) index.php?module=client&action=giftbox&id=$1 [L]
+RewriteRule ^client/verify/([A-Za-z0-9-]+) index.php?module=client&action=verify&token=$1 [L]
+RewriteRule ^client/notification/view/([A-Za-z0-9-]+) index.php?module=client&action=notification-view&id=$1 [L]
+RewriteRule ^client/profile-ctv/([A-Za-z0-9-]+) index.php?module=client&action=profile-ctv&username=$1 [L]
+RewriteRule ^client/order/([A-Za-z0-9-]+) index.php?module=client&action=order&trans_id=$1 [L]
+RewriteRule ^client/payment/([A-Za-z0-9-]+) index.php?module=client&action=payment&invoice=$1 [L]
+RewriteRule ^client/viewsource/([A-Za-z0-9-]+) index.php?module=client&action=viewsource&id=$1 [L]
+RewriteRule ^client/history-vps/view/([A-Za-z0-9-]+) index.php?module=client&action=view-vps&id=$1 [L]
+RewriteRule ^client/viewnoti/([A-Za-z0-9-]+) index.php?module=client&action=viewnoti&id=$1 [L]
+
+RewriteRule ^client/recharge/card$ index.php?module=client&action=card [L]
+RewriteRule ^client/recharge/bank$ index.php?module=client&action=bank [L]
+RewriteRule ^category/([A-Za-z0-9-]+) index.php?module=client&action=category&cname=$1 [L]
+RewriteRule ^client/blogs-detail/([A-Za-z0-9-]+) index.php?module=client&action=blogs-detail&id=$1 [L]
+RewriteRule ^client/confproduct/([A-Za-z0-9-]+) index.php?module=client&action=confproduct&id=$1 [L]
+RewriteRule ^client/product/([A-Za-z0-9-]+) index.php?module=client&action=product&slug=$1 [L]
+RewriteRule ^client/([A-Za-z0-9-]+) index.php?module=client&action=$1 [L]
+RewriteRule ^client index.php?module=client&action= [L]
+RewriteRule ^apigetsodu/(.*)$ ajaxs/client/historymomo.php?balancetoken=$1 [L]
+
+#Xử lý nạp tiền
+RewriteRule ^recharge/([A-Za-z0-9-]+) index.php?module=client&action=$1 [L]
+#Xử lý Route COMMON
+RewriteRule ^common/([A-Za-z0-9-]+) index.php?module=common&action=$1 [L]
+ErrorDocument 404 /404.php

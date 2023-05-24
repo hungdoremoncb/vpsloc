@@ -1,0 +1,7 @@
+[17-Apr-2023 12:30:13 Asia/Ho_Chi_Minh] PHP Warning:  require_once(../../core/class/class.phpmailer.php): Failed to open stream: No such file or directory in /home/cloudvps/public_html/ajaxs/client/resetpassword.php on line 7
+[17-Apr-2023 12:30:13 Asia/Ho_Chi_Minh] PHP Fatal error:  Uncaught Error: Failed opening required '../../core/class/class.phpmailer.php' (include_path='.:/opt/alt/php80/usr/share/pear:/opt/alt/php80/usr/share/php:/usr/share/pear:/usr/share/php') in /home/cloudvps/public_html/ajaxs/client/resetpassword.php:7
+Stack trace:
+#0 {main}
+  thrown in /home/cloudvps/public_html/ajaxs/client/resetpassword.php on line 7
+[17-Apr-2023 18:57:34 Asia/Ho_Chi_Minh] PHP Warning:  Undefined array key "opera" in /home/cloudvps/public_html/ajaxs/client/buy.php on line 11
+[17-Apr-2023 19:28:13 Asia/Ho_Chi_Minh] PHP Warning:  Undefined array key "opera" in /home/cloudvps/public_html/ajaxs/client/buy.php on line 11
