@@ -1,9 +1,12 @@
 <?php
 $NNL = new DB;
-function BASE_URL($base_url)
+function BASE_URL($url)
 {
-    global $url;
-    return $url . $base_url;
+    $base_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER["HTTP_HOST"];
+    if ($base_url == 'http://localhost') {
+        $base_url = 'http://localhost';
+    }
+    return $base_url . '/' . $url;
 }
 function display_status_product($data)
 {
@@ -24,8 +27,9 @@ function check_string($data)
 {
     return trim(htmlspecialchars(addslashes($data)));
 }
-function check_exp($expiration_date){
-    if(empty($expiration_date)){
+function check_exp($expiration_date)
+{
+    if (empty($expiration_date)) {
         return '<span class="badge badge-warning">Đang xử lý</span>';
     }
     $day = floor(($expiration_date - time()) / 86400);
@@ -117,7 +121,7 @@ function Locdz_Email($mail_nhan, $ten_nhan, $chu_de, $noi_dung, $bcc)
 }
 function parse_order_id($des, $MEMO_PREFIX)
 {
-    $re = '/'.$MEMO_PREFIX.'\d+/im';
+    $re = '/' . $MEMO_PREFIX . '\d+/im';
     preg_match_all($re, $des, $matches, PREG_SET_ORDER, 0);
     if (count($matches) == 0) {
         return null;
@@ -126,38 +130,38 @@ function parse_order_id($des, $MEMO_PREFIX)
     $orderCode = $matches[0][0];
     $prefixLength = strlen($MEMO_PREFIX);
     $orderId = intval(substr($orderCode, $prefixLength));
-    return $orderId ;
+    return $orderId;
 }
-function xss($data) {
+function xss($data)
+{
     // Fix &entity\n;
-    $data = str_replace(array('&amp;','&lt;','&gt;'), array('&amp;amp;','&amp;lt;','&amp;gt;'), $data);
+    $data = str_replace(array('&amp;', '&lt;', '&gt;'), array('&amp;amp;', '&amp;lt;', '&amp;gt;'), $data);
     $data = preg_replace('/(&#*\w+)[\x00-\x20]+;/u', '$1;', $data);
     $data = preg_replace('/(&#x*[0-9A-F]+);*/iu', '$1;', $data);
     $data = html_entity_decode($data, ENT_COMPAT, 'UTF-8');
-    
+
     // Remove any attribute starting with "on" or xmlns
     $data = preg_replace('#(<[^>]+?[\x00-\x20"\'])(?:on|xmlns)[^>]*+>#iu', '$1>', $data);
-    
+
     // Remove javascript: and vbscript: protocols
     $data = preg_replace('#([a-z]*)[\x00-\x20]*=[\x00-\x20]*([`\'"]*)[\x00-\x20]*j[\x00-\x20]*a[\x00-\x20]*v[\x00-\x20]*a[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu', '$1=$2nojavascript...', $data);
     $data = preg_replace('#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*v[\x00-\x20]*b[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu', '$1=$2novbscript...', $data);
     $data = preg_replace('#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*-moz-binding[\x00-\x20]*:#u', '$1=$2nomozbinding...', $data);
-    
+
     // Only works in IE: <span style="width: expression(alert('Ping!'));"></span>
     $data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?expression[\x00-\x20]*\([^>]*+>#i', '$1>', $data);
     $data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?behaviour[\x00-\x20]*\([^>]*+>#i', '$1>', $data);
     $data = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:*[^>]*+>#iu', '$1>', $data);
-    
+
     // Remove namespaced elements (we do not need them)
     $data = preg_replace('#</*\w+:\w[^>]*+>#i', '', $data);
-    
+
     do {
         // Remove really unwanted tags
         $old_data = $data;
         $data = preg_replace('#</*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|i(?:frame|layer)|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|title|xml)[^>]*+>#i', '', $data);
-    }
-    while ($old_data !== $data);
-    
+    } while ($old_data !== $data);
+
     // we are done...
     $nhatloc = htmlspecialchars(addslashes(trim($data)));
 
@@ -180,7 +184,7 @@ function check_img($img)
     $filename = $_FILES[$img]['name'];
     $ext = explode(".", $filename);
     $ext = end($ext);
-    $valid_ext = array("png", "jpeg", "jpg", "PNG", "JPEG", "JPG", "gif", "GIF","svg");
+    $valid_ext = array("png", "jpeg", "jpg", "PNG", "JPEG", "JPG", "gif", "GIF", "svg");
     if (in_array($ext, $valid_ext)) {
         return true;
     }
@@ -272,43 +276,31 @@ function nnl_error_time($text, $url, $time)
 }
 function status($data)
 {
-    if ($data == 'xuly'){
+    if ($data == 'xuly') {
         $show = '<span class="status status-unpaid">Đang xử lý</span>';
-    }
-    else if ($data == 'hoantat'){
+    } else if ($data == 'hoantat') {
         $show = '<span class="status status-active">Đang hoạt động</span>';
-    }
-    else if ($data == 'nhandon'){
+    } else if ($data == 'nhandon') {
         $show = '<span class="status status-cancelled">Đang thực hiện reg vps</span>';
-    }
-    else if ($data == 'thanhcong'){
+    } else if ($data == 'thanhcong') {
         $show = '<span class="badge badge-success">Thành công</span>';
-    }
-    else if ($data == 'success'){
+    } else if ($data == 'success') {
         $show = '<span class="badge badge-success">Success</span>';
-    }
-    else if ($data == 'thatbai'){
+    } else if ($data == 'thatbai') {
         $show = '<span class="badge badge-danger">Thất bại</span>';
-    }
-    else if ($data == 'error'){
+    } else if ($data == 'error') {
         $show = '<span class="badge badge-danger">Error</span>';
-    }
-    else if ($data == 'loi'){
+    } else if ($data == 'loi') {
         $show = '<span class="badge badge-danger">Lỗi</span>';
-    }
-    else if ($data == 'huy'){
+    } else if ($data == 'huy') {
         $show = '<span class="badge badge-danger">Hủy</span>';
-    }
-    else if ($data == 'dangnap'){
+    } else if ($data == 'dangnap') {
         $show = '<span class="badge badge-warning">Đang đợi nạp</span>';
-    }
-    else if ($data == 2){
+    } else if ($data == 2) {
         $show = '<span class="badge badge-success">Hoàn tất</span>';
-    }
-    else if ($data == 1){
+    } else if ($data == 1) {
         $show = '<span class="badge badge-info">Đang xử lý</span>';
-    }
-    else{
+    } else {
         $show = '<span class="badge badge-warning">Khác</span>';
     }
     return $show;
@@ -359,127 +351,104 @@ function curl_get($url)
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     $data = curl_exec($ch);
-    
+
     curl_close($ch);
     return $data;
 }
 function display_capdo($data)
 {
     $show = '<span class="badge badge-info">THÀNH VIÊN</span>';
-    if ($data == "admin")
-    {
+    if ($data == "admin") {
         $show = '<span class="badge badge-danger">QUẢN TRỊ VIÊN</span>';
-    }
-    else if ($data == "congtacvien")
-    {
+    } else if ($data == "congtacvien") {
         $show = '<span class="badge badge-success">CỘNG TÁC VIÊN</span>';
     }
     return $show;
 }
 function display_banned($data)
 {
-    if ($data == 1)
-    {
+    if ($data == 1) {
         $show = '<span class="badge badge-danger">Banned</span>';
-    }
-    else if ($data == 0)
-    {
+    } else if ($data == 0) {
         $show = '<span class="badge badge-success">Hoạt động</span>';
     }
     return $show;
 }
 function msg_success2($text)
 {
-    return die('<script type="text/javascript">Swal.fire("Thành Công", "'.$text.'","success");</script>');
+    return die('<script type="text/javascript">Swal.fire("Thành Công", "' . $text . '","success");</script>');
 }
 function msg_error2($text)
 {
-    return die('<script type="text/javascript">Swal.fire("Thất Bại", "'.$text.'","error");</script>');
+    return die('<script type="text/javascript">Swal.fire("Thất Bại", "' . $text . '","error");</script>');
 }
 function msg_warning2($text)
 {
-    return die('<script type="text/javascript">Swal.fire("Thông Báo", "'.$text.'","warning");</script>');
+    return die('<script type="text/javascript">Swal.fire("Thông Báo", "' . $text . '","warning");</script>');
 }
 function msg_success($text, $url, $time)
 {
-    return die('<script type="text/javascript">Swal.fire("Thành Công", "'.$text.'","success");
-    setTimeout(function(){ location.href = "'.$url.'" },'.$time.');</script>');
+    return die('<script type="text/javascript">Swal.fire("Thành Công", "' . $text . '","success");
+    setTimeout(function(){ location.href = "' . $url . '" },' . $time . ');</script>');
 }
 function msg_error($text, $url, $time)
 {
-    return die('<script type="text/javascript">Swal.fire("Thất Bại", "'.$text.'","error");
-    setTimeout(function(){ location.href = "'.$url.'" },'.$time.');</script>');
+    return die('<script type="text/javascript">Swal.fire("Thất Bại", "' . $text . '","error");
+    setTimeout(function(){ location.href = "' . $url . '" },' . $time . ');</script>');
 }
 function msg_warning($text, $url, $time)
 {
-    return die('<script type="text/javascript">Swal.fire("Thông Báo", "'.$text.'","warning");
-    setTimeout(function(){ location.href = "'.$url.'" },'.$time.');</script>');
+    return die('<script type="text/javascript">Swal.fire("Thông Báo", "' . $text . '","warning");
+    setTimeout(function(){ location.href = "' . $url . '" },' . $time . ');</script>');
 }
 
 function admin_msg_success($text, $url, $time)
 {
-    return die('<script type="text/javascript">Swal.fire("Thành Công", "'.$text.'","success");
-    setTimeout(function(){ location.href = "'.$url.'" },'.$time.');</script>');
+    return die('<script type="text/javascript">Swal.fire("Thành Công", "' . $text . '","success");
+    setTimeout(function(){ location.href = "' . $url . '" },' . $time . ');</script>');
 }
 function admin_msg_error($text, $url, $time)
 {
-    return die('<script type="text/javascript">Swal.fire("Thất Bại", "'.$text.'","error");
-    setTimeout(function(){ location.href = "'.$url.'" },'.$time.');</script>');
+    return die('<script type="text/javascript">Swal.fire("Thất Bại", "' . $text . '","error");
+    setTimeout(function(){ location.href = "' . $url . '" },' . $time . ');</script>');
 }
 function admin_msg_warning($text, $url, $time)
 {
-    return die('<script type="text/javascript">Swal.fire("Thông Báo", "'.$text.'","warning");
-    setTimeout(function(){ location.href = "'.$url.'" },'.$time.');</script>');
+    return die('<script type="text/javascript">Swal.fire("Thông Báo", "' . $text . '","warning");
+    setTimeout(function(){ location.href = "' . $url . '" },' . $time . ');</script>');
 }
 function display($data)
 {
-    if ($data == 'HIDE')
-    {
+    if ($data == 'HIDE') {
         $show = '<span class="badge badge-danger">ẨN</span>';
-    }
-    else if ($data == 'SHOW')
-    {
+    } else if ($data == 'SHOW') {
         $show = '<span class="badge badge-success">HIỂN THỊ</span>';
     }
     return $show;
 }
 function display_2($data)
 {
-    if ($data == '0')
-    {
+    if ($data == '0') {
         $show = '<span class="badge badge-danger">ẨN</span>';
-    }
-    else if ($data == '1')
-    {
+    } else if ($data == '1') {
         $show = '<span class="badge badge-success">HIỂN THỊ</span>';
     }
     return $show;
 }
 function loaithe($data)
 {
-    if ($data == 'Viettel' || $data == 'VIETTEL')
-    {
+    if ($data == 'Viettel' || $data == 'VIETTEL') {
         $show = 'https://i.imgur.com/xFePMtd.png';
-    }
-    else if ($data == 'Vinaphone' || $data == 'VINAPHONE')
-    {
+    } else if ($data == 'Vinaphone' || $data == 'VINAPHONE') {
         $show = 'https://i.imgur.com/s9Qq3Fz.png';
-    }
-    else if ($data == 'Mobifone' || $data == 'MOBIFONE')
-    {
+    } else if ($data == 'Mobifone' || $data == 'MOBIFONE') {
         $show = 'https://i.imgur.com/qQtcWJW.png';
-    }
-    else if ($data == 'Vietnamobile' || $data == 'VNMOBI')
-    {
+    } else if ($data == 'Vietnamobile' || $data == 'VNMOBI') {
         $show = 'https://i.imgur.com/IHm28mq.png';
-    }
-    else if ($data == 'Zing' || $data == 'ZING')
-    {
+    } else if ($data == 'Zing' || $data == 'ZING') {
         $show = 'https://i.imgur.com/xkd7kQ0.png';
-    }
-    else if ($data == 'Garena' || $data == 'garena')
-    {
+    } else if ($data == 'Garena' || $data == 'garena') {
         $show = 'https://i.imgur.com/BLkY5qm.png';
     }
-    return '<img style="text-align: center;" src="'.$show.'" width="70px" />';
+    return '<img style="text-align: center;" src="' . $show . '" width="70px" />';
 }
